@@ -45,7 +45,10 @@ const startServer = async () => {
     longitude: Float!
   }
 
-
+  type Fishingequipment{
+    id: ID!
+    name: String!
+  }
 
   type Query {
     boards: [Board]
@@ -56,12 +59,15 @@ const startServer = async () => {
     locations:[Location]
     harbours: [Harbour]
     harbour(id:Int):Harbour
+    fishingequipments:[Fishingequipment]
+    fishingequipment(id:Int): Fishingequipment
   }
 
   type Mutation {
     createFish(imguri: String! description: String! name: String!): Fish
     createLocation(name: String!): Location
     createHarbour(name: String! latitude: Float! longitude: Float!):Harbour
+    createFishingEquipment(name:String!):Fishingequipment
   }
 
 `;
@@ -100,6 +106,14 @@ const resolvers = {
       })
     },
     locations:() => { return prisma.location.findMany()},
+    fishingequipment:(parent:any, args:any, context:any, info:any) => {
+      return prisma.fishingequipment.findUnique({
+        where:{
+          id: args.id || undefined
+        }
+      })
+    },
+    fishingequipments: () => { return prisma.fishingequipment.findMany()},
   
   },
 
@@ -136,6 +150,16 @@ const resolvers = {
 
       return newLocation;
     },
+
+    createFishingEquipment:(parent:any, args:any, context:any, info:any) => { 
+      const newFe = prisma.fishingequipment.create({
+        data: {
+          name: args.name
+        }
+      })
+
+      return newFe;
+    }
 
 
 

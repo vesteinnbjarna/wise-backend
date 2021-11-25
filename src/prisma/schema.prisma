@@ -17,26 +17,28 @@ model Board {
 }
 
 model Fish {
-  id          Int    @id @default(autoincrement())
-  imguri      String
-  description String
-  name        String @unique
-  fishingTrip    FishingTrip[]
+  id            Int    @id @default(autoincrement())
+  imguri        String
+  description   String
+  name          String @unique
+  fishingtrip   Fishingtrip[]
 }
 
 model Location {
   id   Int    @id @default(autoincrement())
   name String @unique
+  fishingtrip Fishingtrip[]
 }
 
 model Harbour {
-  id        Int    @id @default(autoincrement())
-  name      String @unique
-  latitude  Float
-  longitude Float
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  latitude    Float
+  longitude   Float
+  fishingtrip Fishingtrip[]
 }
 
-model TreatedBy {
+model Treatedby {
   id          Int    @id @default(autoincrement())
   name        String @unique
   description String
@@ -47,21 +49,27 @@ model TreatedBy {
 }
 
 model Boat {
-  id             Int           @id @default(autoincrement())
-  name           String        @unique
-  imguri         String
-  freeze_trawler Boolean
-  fishingTrip    FishingTrip[]
+  id                  Int               @id @default(autoincrement())
+  name                String            @unique
+  imguri              String
+  freeze_trawler      Boolean
+  fishingtrip         Fishingtrip[]
+  fishingequipmentId  Int               @unique
+  fishingequipment    Fishingequipment  @relation (fields:[fishingequipmentId], references: [id])
 }
 
-model FishingTrip {
-  id        Int      @id @default(autoincrement())
-  startDate DateTime
-  endDate   DateTime
-  fishId    Int       @unique
-  fish      Fish      @relation (fields:[fishId], references: [id])
-  boatId    Int       @unique
-  boat      Boat      @relation  (fields:[boatId], references: [id])   
+model Fishingtrip {
+  id          Int      @id @default(autoincrement())
+  startDate   DateTime
+  endDate     DateTime
+  fishId      Int       @unique
+  fish        Fish      @relation (fields:[fishId], references: [id])
+  boatId      Int       @unique
+  boat        Boat      @relation  (fields:[boatId], references: [id])
+  harbourId   Int       @unique
+  harbour     Harbour   @relation (fields:[harbourId], references: [id])
+  locationId  Int       @unique
+  Location    Location  @relation (fields:[locationId], references: [id])
 }
 
 model Traceability {
@@ -69,8 +77,9 @@ model Traceability {
 
 }
 
-model FishingEquipment {
-  id   Int    @id @default(autoincrement())
-  name String @unique
+model Fishingequipment {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  boat  Boat[]
 
 }

@@ -146,3 +146,37 @@ mutation {
   }
 }
 ```
+
+## FishingEquipment Queries and Mutations ##
+### harbours ###
+
+returns all fe in the database
+```
+query {
+  fishingequipments {
+    id
+    name
+  }
+```
+
+### FishingEquipment ###
+returns a single fe or undefined
+```
+query {
+  fishingequipment(id:1) {
+    id
+    name
+  }
+}
+```
+
+### **createFishingEquipment** ###
+creates a fe and then returns it. If the name is already present in the database it will not create it.
+```
+mutation {
+  createFishingEquipment(name: "bby") {
+    id
+    name
+  }
+}
+```
