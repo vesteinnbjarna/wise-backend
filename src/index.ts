@@ -39,7 +39,7 @@ const startServer = async () => {
     boards: [Board]
     board: Board
     fishes: [Fish]
-    fish(id: ID!): Fish
+    fish(id: Int): Fish
   }
 
   type Mutation {
@@ -59,6 +59,14 @@ const resolvers = {
     },
     fishes: () => {
       return prisma.fish.findMany()
+    },
+    fish: (arent:any, args:any, context:any, info:any) => {
+      console.log(args)
+      return prisma.fish.findUnique({
+        where:{
+          id: args.id || undefined
+        }
+      })
     }
   },
 
