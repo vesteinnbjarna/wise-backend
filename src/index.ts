@@ -38,9 +38,14 @@ const startServer = async () => {
     name: String!
   }
 
-  input LocationCreateInput {
+  type Harbour {
+    id: ID!
     name: String!
+    latitude: Float!
+    longitude: Float!
   }
+
+
 
   type Query {
     boards: [Board]
@@ -49,17 +54,29 @@ const startServer = async () => {
     fish(id: Int): Fish
     location(id: Int): Location
     locations:[Location]
+    harbours: [Harbour]
+    harbour(id:Int):Harbour
   }
 
   type Mutation {
     createFish(imguri: String! description: String! name: String!): Fish
     createLocation(name: String!): Location
+    createHarbour(name: String! latitude: Float! longitude: Float!):Harbour
   }
 
 `;
 
 const resolvers = {
   Query: {
+    harbours:()=> { return prisma.harbour.findMany()},
+    harbour:(parent:any, args:any, context:any, info:any) => {
+      console.log(args)
+      return prisma.harbour.findUnique({
+        where:{
+          id: args.id || undefined
+        }
+      })
+    },
     boards: () => {
       return prisma.board.findMany()
     },
@@ -97,6 +114,19 @@ const resolvers = {
       })
       return newFish;
     },
+    createHarbour: (parent:any, args:any, context:any, info:any) => {
+      console.log(args)
+      const newHarbour= prisma.harbour.create({
+        data: {
+          name: args.name,
+          latitude: args.latitude,
+          longitude: args.longitude,
+        }
+      })
+      return newHarbour;
+    },
+
+
     createLocation: (parent:any, args:any, context:any, info:any) => {
       const newLocation = prisma.location.create({
         data: {

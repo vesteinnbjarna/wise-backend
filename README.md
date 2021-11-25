@@ -54,7 +54,7 @@ mutation {
 }
 ```
 
-## Fish Queries and Mutations ##
+## Location Queries and Mutations ##
 ### locations ###
 
 returns all fishes in the database
@@ -87,6 +87,62 @@ mutation  {
   createLocation(name: "Reykjavík") {
     id
     name
+  }
+}
+```
+
+### **createFish** ###
+creates a fish and then returns it. If the name is already present in the database it will not create it.
+```
+mutation {
+    createFish(imguri: "www.bigfish.com", description: "sad fish eats alot", name: "bigfish3") {
+    id
+    name
+    description
+    imguri
+    
+  }
+}
+```
+
+## Harbour Queries and Mutations ##
+### harbours ###
+
+returns all harbours in the database
+```
+query Harbours {
+  harbours {
+    id
+    name
+    latitude
+    longitude
+  }
+}
+```
+
+### harbour ###
+returns a single harbour or undefined
+```
+query Harbour {
+  harbour(id:1) {
+    id
+    name
+    longitude
+    latitude
+  }
+}
+```
+
+### **createHarbour** ###
+creates a harbour and then returns it. If the name is already present in the database it will not create it.
+```
+mutation {
+  createHarbour(name: "Hafnarfjörður", latitude: 55.1, longitude: 55.2) {
+    id
+    name
+    latitude
+    longitude
+    
   }
 }
 ```
