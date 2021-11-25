@@ -33,21 +33,27 @@ const startServer = async () => {
     name: String!
   }
 
+  type Location {
+    id: ID!
+    name: String!
+  }
 
+  input LocationCreateInput {
+    name: String!
+  }
 
   type Query {
     boards: [Board]
     board: Board
     fishes: [Fish]
     fish(id: Int): Fish
+    location(id: Int): Location
+    locations:[Location]
   }
 
   type Mutation {
-    createFish(
-      imguri: String!
-      description: String!
-      name: String!
-    ): Fish 
+    createFish(imguri: String! description: String! name: String!): Fish
+    createLocation(name: String!): Location
   }
 
 `;
@@ -60,14 +66,24 @@ const resolvers = {
     fishes: () => {
       return prisma.fish.findMany()
     },
-    fish: (arent:any, args:any, context:any, info:any) => {
+    fish: (parent:any, args:any, context:any, info:any) => {
       console.log(args)
       return prisma.fish.findUnique({
         where:{
           id: args.id || undefined
         }
       })
-    }
+    },
+    location:(parent:any,args:any, context:any, info:any) => {
+      console.log(args)
+      return prisma.location.findUnique({
+        where:{
+          id: args.id || undefined
+        }
+      })
+    },
+    locations:() => { return prisma.location.findMany()},
+  
   },
 
   Mutation: {
@@ -80,9 +96,18 @@ const resolvers = {
         }
       })
       return newFish;
+    },
+    createLocation: (parent:any, args:any, context:any, info:any) => {
+      const newLocation = prisma.location.create({
+        data: {
+          name: args.name
+        }
+      })
+
+      return newLocation;
+    },
 
 
-    }
 
   }
 };
