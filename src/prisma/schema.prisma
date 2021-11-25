@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,10 +8,69 @@ datasource db {
 }
 
 model Board {
-  id          Int       @id @default(autoincrement())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   title       String
   description String?
-  path        String    @unique
+  path        String   @unique
+}
+
+model Fish {
+  id          Int    @id @default(autoincrement())
+  imguri      String
+  description String
+  name        String @unique
+  fishingTrip    FishingTrip[]
+}
+
+model Location {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+}
+
+model Harbour {
+  id        Int    @id @default(autoincrement())
+  name      String @unique
+  latitude  Float
+  longitude Float
+}
+
+model TreatedBy {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  description String
+  logouri     String
+  homepage    String
+  imguri      String
+
+}
+
+model Boat {
+  id             Int           @id @default(autoincrement())
+  name           String        @unique
+  imguri         String
+  freeze_trawler Boolean
+  fishingTrip    FishingTrip[]
+}
+
+model FishingTrip {
+  id        Int      @id @default(autoincrement())
+  startDate DateTime
+  endDate   DateTime
+  fishId    Int       @unique
+  fish      Fish      @relation (fields:[fishId], references: [id])
+  boatId    Int       @unique
+  boat      Boat      @relation  (fields:[boatId], references: [id])   
+}
+
+model Traceability {
+  id Int @id @default(autoincrement())
+
+}
+
+model FishingEquipment {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
 }
