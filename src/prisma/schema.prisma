@@ -54,7 +54,7 @@ model Boat {
   imguri              String
   freeze_trawler      Boolean
   fishingtrip         Fishingtrip[]
-  fishingequipmentId  Int               @unique
+  fishingequipmentId  Int               
   fishingequipment    Fishingequipment  @relation (fields:[fishingequipmentId], references: [id])
 }
 

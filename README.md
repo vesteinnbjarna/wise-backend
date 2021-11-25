@@ -148,7 +148,7 @@ mutation {
 ```
 
 ## FishingEquipment Queries and Mutations ##
-### harbours ###
+### FE ###
 
 returns all fe in the database
 ```
@@ -177,6 +177,51 @@ mutation {
   createFishingEquipment(name: "bby") {
     id
     name
+  }
+}
+```
+
+
+## Boats Queries and Mutations ##
+### boats ###
+
+returns all boats in the database
+```
+query Boats {
+  boats {
+    id
+    name
+    imguri
+    freeze_trawler
+    fishingequipmentId
+  }
+}
+```
+
+### boat ###
+returns a single boat or undefined
+```
+query Query {
+  boat(id:1) {
+    id
+    name
+    imguri
+    fishingequipmentId
+    freeze_trawler  
+  }
+}
+```
+
+### **createBoat** ###
+creates a boat and then returns it. If the name is already present in the database it will not create it. Also it has a foreign key contraint on fishingequipmentId, it needs to be present in the data base for it to be created.
+```
+mutation CreateBoat {
+  createBoat(name: "Gullfoss-3", imguri: "www.boat.com", fishingequipmentId: 1, freeze_trawler: true) {
+    name
+    id
+    imguri
+    fishingequipmentId
+    freeze_trawler 
   }
 }
 ```

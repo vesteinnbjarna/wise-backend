@@ -50,6 +50,14 @@ const startServer = async () => {
     name: String!
   }
 
+  type Boat{
+    id: ID!
+    name: String!
+    imguri: String!
+    fishingequipmentId: Int!
+    freeze_trawler: Boolean!
+  }
+
   type Query {
     boards: [Board]
     board: Board
@@ -61,6 +69,8 @@ const startServer = async () => {
     harbour(id:Int):Harbour
     fishingequipments:[Fishingequipment]
     fishingequipment(id:Int): Fishingequipment
+    boat(id:Int):Boat
+    boats:[Boat]
   }
 
   type Mutation {
@@ -68,12 +78,21 @@ const startServer = async () => {
     createLocation(name: String!): Location
     createHarbour(name: String! latitude: Float! longitude: Float!):Harbour
     createFishingEquipment(name:String!):Fishingequipment
+    createBoat(name:String! imguri: String! fishingequipmentId: Int! freeze_trawler: Boolean!):Boat
   }
 
 `;
 
 const resolvers = {
   Query: {
+    boats:() => {return prisma.boat.findMany()},
+    boat:(parent:any, args:any, context:any, info:any) => {
+      return prisma.boat.findUnique({
+        where:{
+          id: args.id || undefined
+        }
+      })
+    },
     harbours:()=> { return prisma.harbour.findMany()},
     harbour:(parent:any, args:any, context:any, info:any) => {
       console.log(args)
@@ -118,6 +137,17 @@ const resolvers = {
   },
 
   Mutation: {
+    createBoat: async (parent:any, args:any, context:any, info:any) => {
+      const newBoat = await prisma.boat.create({
+        data: {
+          name: args.name,
+          imguri: args.imguri,
+          fishingequipmentId: args.fishingequipmentId,
+          freeze_trawler: args.freeze_trawler,
+        }
+      })
+      return newBoat
+    },
     createFish: (parent:any, args:any, context:any, info:any) => {
       const newFish = prisma.fish.create({
         data: {
@@ -128,7 +158,7 @@ const resolvers = {
       })
       return newFish;
     },
-    createHarbour: (parent:any, args:any, context:any, info:any) => {
+     createHarbour: (parent:any, args:any, context:any, info:any) => {
       console.log(args)
       const newHarbour= prisma.harbour.create({
         data: {
