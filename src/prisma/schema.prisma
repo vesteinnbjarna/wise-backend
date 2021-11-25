@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgres://kteizvyaksjvkf:e662f0cfc7c5698fa318afdfb4684481ac4da106ff465155cbb955166090737c@ec2-34-254-120-2.eu-west-1.compute.amazonaws.com:5432/ddi2kr8l1htuc4"
+  url      = const lh = "postgres://kteizvyaksjvkf:e662f0cfc7c5698fa318afdfb4684481ac4da106ff465155cbb955166090737c@ec2-34-254-120-2.eu-west-1.compute.amazonaws.com:5432/ddi2kr8l1htuc4"
 }
 
 model Board {

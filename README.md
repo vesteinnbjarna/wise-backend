@@ -8,7 +8,7 @@ We have yet to implement a way to run this within the frontend
 However for each Query or Mutation you just need to run them in Postman to see if they work.
 
 ## implemented as of 25/11 ##
-# Queries #
+## Fish Queries and Mutations ##
 
 
 ### fishes ###
@@ -26,11 +26,20 @@ query
 }
 ```
 
+### fish ###
+returns a single fish or undefined
+```
+query{
+  fish(id: 8) {
+    id
+    imguri
+    description
+    name
+  }
+}
+```
 
 
-
-
-# Mutations #
 
 ### **createFish** ###
 creates a fish and then returns it. If the name is already present in the database it will not create it.
