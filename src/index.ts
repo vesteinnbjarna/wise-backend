@@ -3,7 +3,7 @@ import express from "express";
 import { ApolloServer, gql } from "apollo-server-express";
 const { prisma } = require('./prisma/client')
 
-// 1
+// Alltaf að muna að breyta url-inu fyrir DB fyrir deployment
 const startServer = async () => { 
 
   // 2
@@ -13,24 +13,70 @@ const startServer = async () => {
 
   // 3
   const typeDefs = gql`
-  type Query {
-    boards: [Board]
-  }
-
-  type Board {
+    type Board {
     id: ID!
     title: String!
     description: String
     path: String!
   }
+
+  type FishInput {
+    imguri: String!
+    description: String!
+    name: String!
+  }
+
+  type Fish {
+    id: ID!
+    imguri: String!
+    description: String!
+    name: String!
+  }
+
+
+
+  type Query {
+    boards: [Board]
+    board: Board
+    fishes: [Fish]
+    fish(id: ID!): Fish
+  }
+
+  type Mutation {
+    createFish(
+      imguri: String!
+      description: String!
+      name: String!
+    ): Fish 
+  }
+
 `;
 
 const resolvers = {
   Query: {
     boards: () => {
       return prisma.board.findMany()
+    },
+    fishes: () => {
+      return prisma.fish.findMany()
     }
   },
+
+  Mutation: {
+    createFish: (parent:any, args:any, context:any, info:any) => {
+      const newFish = prisma.fish.create({
+        data: {
+          name: args.name,
+          description: args.description,
+          imguri: args.imguri,
+        }
+      })
+      return newFish;
+
+
+    }
+
+  }
 };
 
   // 5
