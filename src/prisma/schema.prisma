@@ -60,9 +60,9 @@ model Boat {
 }
 
 model Fishingtrip {
-  id          Int      @id @default(autoincrement())
-  startDate   DateTime
-  endDate     DateTime
+  id          Int           @id @default(autoincrement())
+  startDate   String
+  endDate     String
   fishId      Int       
   fish        Fish          @relation (fields:[fishId], references: [id])
   boatId      Int       
@@ -73,11 +73,14 @@ model Fishingtrip {
   location    Location      @relation (fields:[locationId], references: [id])
   treatedbyid Int
   treatedby   Treatedby      @relation (fields:[treatedbyid], references: [id])
+  traceability Traceability[]
   
 }
 
 model Traceability {
   id Int @id @default(autoincrement())
+  fishingtripId Int 
+  fishingtrip Fishingtrip @relation (fields:[fishingtripId],references: [id])
 
 }
 

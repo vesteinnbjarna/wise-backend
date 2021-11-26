@@ -2,6 +2,7 @@ import { createServer } from "http";
 import express from "express";
 import { ApolloServer, gql } from "apollo-server-express";
 const { prisma } = require('./prisma/client')
+//import { GraphQLDateTime } from "graphql-iso-date";
 
 // Alltaf að muna að breyta url-inu fyrir DB fyrir deployment
 const startServer = async () => { 
@@ -61,7 +62,27 @@ const startServer = async () => {
     freeze_trawler: Boolean!
   }
 
+  type Fishingtrip{
+    id: ID!
+    startDate: String!
+    endDate: String!
+    fishId: Int!
+    boatId: Int!
+    harbourId: Int!
+    locationId: Int!
+    treatedbyid: Int!
+  }
+
+  type Traceability{
+    id: ID!
+    fishingtripId: Int!
+  }
+
   type Query {
+    traceability(id:Int):Traceability
+    traceabilities:[Traceability]
+    fishingtrips: [Fishingtrip]
+    fishingtrip(id:Int): Fishingtrip
     treatedby(id:Int): Treatedby
     treatedbys:[Treatedby]
     boards: [Board]
@@ -79,6 +100,8 @@ const startServer = async () => {
   }
 
   type Mutation {
+    createTraceability(fishingtripId: Int!):Traceability
+    createFishingTrip(startDate: String! endDate: String! fishId:Int! boatId:Int! harbourId:Int! locationId:Int! treatedbyid: Int!):Fishingtrip
     createTreatedBy(name:String! description:String! logouri:String! homepage:String! imguri:String!):Treatedby
     createFish(imguri: String! description: String! name: String!): Fish
     createLocation(name: String!): Location
@@ -91,6 +114,22 @@ const startServer = async () => {
 
 const resolvers = {
   Query: {
+    traceability(parent:any, args:any, context:any, info:any){
+      return prisma.traceability.findUnique({
+        where:{
+          id: args.id || undefined,
+        }
+      })
+    },
+    traceabilities:() =>{ return prisma.traceability.findMany()},
+    fishingtrips:()=>{ return prisma.fishingtrip.findMany()},
+    fishingtrip(parent:any, args:any, context:any, info:any){
+      return prisma.fishingtrip.findUnique({
+        where:{
+          id: args.id || undefined
+        }
+      })
+    },
     treatedby:(parent:any, args:any, context:any, info:any)=>{
       return prisma.treatedby.findUnique({
         where:{
@@ -151,6 +190,29 @@ const resolvers = {
   },
 
   Mutation: {
+    createTraceability: async(parent:any, args:any, context:any, info:any) => { 
+      const newTraceability = await prisma.traceability.create({
+        data: {
+          fishingtripId: args.fishingtripId
+        }
+      })
+      return newTraceability},
+
+    createFishingTrip: async(parent:any, args:any, context:any) => { 
+      const newFishingTrip = await prisma.fishingtrip.create({
+
+        data: {
+          startDate: args.startDate,
+          endDate: args.endDate,
+          fishId: args.fishId,
+          boatId: args.boatId,
+          harbourId: args.harbourId,
+          locationId: args.locationId,
+          treatedbyid: args.treatedbyid
+        }
+      })
+      return newFishingTrip;
+    },
 
     createTreatedBy: async (parent:any, args:any, context:any, info:any) =>
     {

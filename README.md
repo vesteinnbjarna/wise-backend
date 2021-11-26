@@ -272,3 +272,106 @@ mutation CreateTreatedBy{
   }
 }
 ```
+
+## FishingTrip Queries and Mutations ##
+### fishingtrips ###
+
+returns all fishingtrips in the database
+```
+query {
+  fishingtrips {
+    id
+    startDate
+    endDate
+    boatId
+    fishId
+    locationId
+    harbourId
+    treatedbyid
+  }
+}
+```
+
+### fishingtrip ###
+returns a single fishingtrip or undefined
+```
+query {
+  fishingtrip (id:1){
+    id
+    startDate
+    endDate
+    boatId
+    fishId
+    locationId
+    harbourId
+    treatedbyid
+    
+  }
+}
+```
+
+### **createFishingTrip** ###
+creates a fishingtrip and then returns it. This is a big one. Before creating a fishing trip you need to make sure that the following already exist in the database
+-fish
+-boat
+-harbour
+-location
+-treatedby
+**You will then have to ** create the fishingtrip with id's of those entities stated above. And also with a start date and a enddate
+There is an example below that works if atleast one of each already exists in the data base
+```
+mutation {
+  createFishingTrip(
+    startDate: "2020-1-2", 
+    endDate: "2021-3-2", 
+    fishId: 1, 
+    boatId: 1, 
+    harbourId: 1, 
+    locationId: 1, 
+    treatedbyid: 1) 
+    {
+    startDate
+    endDate
+    fishId
+    boatId
+    harbourId
+    locationId
+    treatedbyid
+    id
+  }
+}
+```
+
+## Traceability Queries and Mutations ##
+### traceabilities ###
+
+returns all traceabilites in the database
+```
+query {
+  traceabilities {
+    fishingtripId
+    id
+  }
+}
+```
+
+### traceability ###
+returns a single traceability or undefined
+```
+query {traceability(id:1) {
+  fishingtripId
+  id
+}}
+```
+
+### **createTraceability** ###
+
+```
+mutation {
+  createTraceability(fishingtripId: 1) {
+    fishingtripId
+    id
+    
+  }
+}
+```
