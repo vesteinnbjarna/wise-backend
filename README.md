@@ -368,7 +368,7 @@ query {traceability(id:1) {
 
 ```
 mutation {
-  createTraceability(fishingtripId: 1) {
+  createTraceability(id: 1) {
     fishingtripId
     id
     
