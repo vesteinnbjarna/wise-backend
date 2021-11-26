@@ -225,3 +225,50 @@ mutation CreateBoat {
   }
 }
 ```
+
+## TreatedBy Queries and Mutations ##
+### treatedbys ###
+
+returns all treatedby in the database
+```
+query Treatedbys {
+  treatedbys {
+    id
+    name
+    description
+    logouri
+    homepage
+    imguri
+  }
+}
+```
+
+### treatedby ###
+returns a single treatedby or undefined
+```
+query Query {
+  treatedby(id:1) {
+    name
+    description
+    id
+    logouri
+    homepage
+    imguri
+  }
+}
+```
+
+### **createTreatedBy** ###
+creates a treatedby and then returns it. If the name is already present in the database it will not create it. 
+```
+mutation CreateTreatedBy{
+  createTreatedBy(name: "Brim3", description: "Brim is a cool company", logouri: "www.brim.com/logo", homepage: "brim.is", imguri: "brim.is/img") {
+    name
+    description
+    id
+    logouri
+    homepage
+    imguri
+  }
+}
+```

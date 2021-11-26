@@ -20,10 +20,13 @@ const startServer = async () => {
     path: String!
   }
 
-  type FishInput {
-    imguri: String!
-    description: String!
+  type Treatedby {
+    id: ID!
     name: String!
+    description: String!
+    logouri: String!
+    homepage: String!
+    imguri: String!
   }
 
   type Fish {
@@ -59,6 +62,8 @@ const startServer = async () => {
   }
 
   type Query {
+    treatedby(id:Int): Treatedby
+    treatedbys:[Treatedby]
     boards: [Board]
     board: Board
     fishes: [Fish]
@@ -74,6 +79,7 @@ const startServer = async () => {
   }
 
   type Mutation {
+    createTreatedBy(name:String! description:String! logouri:String! homepage:String! imguri:String!):Treatedby
     createFish(imguri: String! description: String! name: String!): Fish
     createLocation(name: String!): Location
     createHarbour(name: String! latitude: Float! longitude: Float!):Harbour
@@ -85,6 +91,14 @@ const startServer = async () => {
 
 const resolvers = {
   Query: {
+    treatedby:(parent:any, args:any, context:any, info:any)=>{
+      return prisma.treatedby.findUnique({
+        where:{
+          id: args.id || undefined
+        }
+      })
+    },
+    treatedbys:() => {return prisma.treatedby.findMany()},
     boats:() => {return prisma.boat.findMany()},
     boat:(parent:any, args:any, context:any, info:any) => {
       return prisma.boat.findUnique({
@@ -137,6 +151,22 @@ const resolvers = {
   },
 
   Mutation: {
+
+    createTreatedBy: async (parent:any, args:any, context:any, info:any) =>
+    {
+      const newTreatedBy = await prisma.treatedby.create({
+        data: {
+          name: args.name,
+          description: args.description,
+          logouri: args.logouri,
+          homepage: args.homepage,
+          imguri: args.imguri,
+        }
+      })
+      return newTreatedBy
+    },
+
+
     createBoat: async (parent:any, args:any, context:any, info:any) => {
       const newBoat = await prisma.boat.create({
         data: {

@@ -45,6 +45,7 @@ model Treatedby {
   logouri     String
   homepage    String
   imguri      String
+  fishingtrip         Fishingtrip[]
 
 }
 
@@ -62,14 +63,17 @@ model Fishingtrip {
   id          Int      @id @default(autoincrement())
   startDate   DateTime
   endDate     DateTime
-  fishId      Int       @unique
-  fish        Fish      @relation (fields:[fishId], references: [id])
-  boatId      Int       @unique
-  boat        Boat      @relation  (fields:[boatId], references: [id])
-  harbourId   Int       @unique
-  harbour     Harbour   @relation (fields:[harbourId], references: [id])
-  locationId  Int       @unique
-  Location    Location  @relation (fields:[locationId], references: [id])
+  fishId      Int       
+  fish        Fish          @relation (fields:[fishId], references: [id])
+  boatId      Int       
+  boat        Boat          @relation  (fields:[boatId], references: [id])
+  harbourId   Int       
+  harbour     Harbour       @relation (fields:[harbourId], references: [id])
+  locationId  Int       
+  location    Location      @relation (fields:[locationId], references: [id])
+  treatedbyid Int
+  treatedby   Treatedby      @relation (fields:[treatedbyid], references: [id])
+  
 }
 
 model Traceability {
