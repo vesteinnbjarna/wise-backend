@@ -59,6 +59,7 @@ const startServer = async () => {
     name: String!
     imguri: String!
     fishingequipmentId: Int!
+    fishingequipment: Fishingequipment
     freeze_trawler: Boolean!
   }
 
@@ -67,15 +68,21 @@ const startServer = async () => {
     startDate: String!
     endDate: String!
     fishId: Int!
+    fish: Fish
     boatId: Int!
+    boat: Boat
     harbourId: Int!
+    harbour: Harbour
     locationId: Int!
+    location: Location
     treatedbyid: Int!
+    treatedby: Treatedby
   }
 
   type Traceability{
     id: ID!
     fishingtripId: Int!
+    fishingtrip: Fishingtrip
   }
 
   type Query {
@@ -117,7 +124,10 @@ const resolvers = {
     traceability(parent:any, args:any, context:any, info:any){
       return prisma.traceability.findUnique({
         where:{
-          id: args.id || undefined,
+          id: args.id 
+        },
+        include:{
+          fishingtrip: true
         }
       })
     },
@@ -126,24 +136,40 @@ const resolvers = {
     fishingtrip(parent:any, args:any, context:any, info:any){
       return prisma.fishingtrip.findUnique({
         where:{
-          id: args.id || undefined
+          id: args.id 
+        },
+        include:{
+          boat: true,
+          treatedby: true,
+          fish:true,
+          location:true,
+          harbour:true,          
         }
       })
     },
     treatedby:(parent:any, args:any, context:any, info:any)=>{
       return prisma.treatedby.findUnique({
         where:{
-          id: args.id || undefined
+          id: args.id 
         }
       })
     },
     treatedbys:() => {return prisma.treatedby.findMany()},
-    boats:() => {return prisma.boat.findMany()},
+    boats:(parent:any, args:any, context:any, info:any) => {
+      return prisma.boat.findMany({
+        include:{fishingequipment: true}
+      })
+    },
     boat:(parent:any, args:any, context:any, info:any) => {
+      console.log(parent, args, context, info)
       return prisma.boat.findUnique({
         where:{
-          id: args.id || undefined
+          id: args.id 
+        },
+        include: {
+          fishingequipment: true
         }
+
       })
     },
     harbours:()=> { return prisma.harbour.findMany()},
@@ -151,7 +177,7 @@ const resolvers = {
       console.log(args)
       return prisma.harbour.findUnique({
         where:{
-          id: args.id || undefined
+          id: args.id 
         }
       })
     },
@@ -165,7 +191,7 @@ const resolvers = {
       console.log(args)
       return prisma.fish.findUnique({
         where:{
-          id: args.id || undefined
+          id: args.id 
         }
       })
     },
@@ -173,7 +199,7 @@ const resolvers = {
       console.log(args)
       return prisma.location.findUnique({
         where:{
-          id: args.id || undefined
+          id: args.id 
         }
       })
     },
@@ -181,8 +207,9 @@ const resolvers = {
     fishingequipment:(parent:any, args:any, context:any, info:any) => {
       return prisma.fishingequipment.findUnique({
         where:{
-          id: args.id || undefined
+          id: args.id
         }
+
       })
     },
     fishingequipments: () => { return prisma.fishingequipment.findMany()},

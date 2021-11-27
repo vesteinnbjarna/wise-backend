@@ -1,0 +1,97 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Board {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  title String [not null]
+  description String
+  path String [unique, not null]
+}
+
+Table Fish {
+  id Int [pk, increment]
+  imguri String [not null]
+  description String [not null]
+  name String [unique, not null]
+  fishingtrip Fishingtrip [not null]
+}
+
+Table Location {
+  id Int [pk, increment]
+  name String [unique, not null]
+  fishingtrip Fishingtrip [not null]
+}
+
+Table Harbour {
+  id Int [pk, increment]
+  name String [unique, not null]
+  latitude Float [not null]
+  longitude Float [not null]
+  fishingtrip Fishingtrip [not null]
+}
+
+Table Treatedby {
+  id Int [pk, increment]
+  name String [unique, not null]
+  description String [not null]
+  logouri String [not null]
+  homepage String [not null]
+  imguri String [not null]
+  fishingtrip Fishingtrip [not null]
+}
+
+Table Boat {
+  id Int [pk, increment]
+  name String [unique, not null]
+  imguri String [not null]
+  freeze_trawler Boolean [not null]
+  fishingtrip Fishingtrip [not null]
+  fishingequipmentId Int [not null]
+  fishingequipment Fishingequipment [not null]
+}
+
+Table Fishingtrip {
+  id Int [pk, increment]
+  startDate String [not null]
+  endDate String [not null]
+  fishId Int [not null]
+  fish Fish [not null]
+  boatId Int [not null]
+  boat Boat [not null]
+  harbourId Int [not null]
+  harbour Harbour [not null]
+  locationId Int [not null]
+  location Location [not null]
+  treatedbyid Int [not null]
+  treatedby Treatedby [not null]
+  traceability Traceability [not null]
+}
+
+Table Traceability {
+  id Int [pk, increment]
+  fishingtripId Int [not null]
+  fishingtrip Fishingtrip [not null]
+}
+
+Table Fishingequipment {
+  id Int [pk, increment]
+  name String [unique, not null]
+  boat Boat [not null]
+}
+
+Ref: Boat.fishingequipmentId > Fishingequipment.id
+
+Ref: Fishingtrip.fishId > Fish.id
+
+Ref: Fishingtrip.boatId > Boat.id
+
+Ref: Fishingtrip.harbourId > Harbour.id
+
+Ref: Fishingtrip.locationId > Location.id
+
+Ref: Fishingtrip.treatedbyid > Treatedby.id
+
+Ref: Traceability.fishingtripId > Fishingtrip.id
