@@ -8,7 +8,7 @@ generator dbml {
 
 datasource db {
   provider = "postgresql"
-  url       = "postgres://higomppbkjryxl:14bcd2032a21fec619d5cd4b135cb33b7ebd176555ca01c52e6e0c4f236e93be@ec2-52-208-221-89.eu-west-1.compute.amazonaws.com:5432/dcb9h90ositaud"
+  url       = "postgres://kteizvyaksjvkf:e662f0cfc7c5698fa318afdfb4684481ac4da106ff465155cbb955166090737c@ec2-34-254-120-2.eu-west-1.compute.amazonaws.com:5432/ddi2kr8l1htuc4"
 }
 
 model Board {
