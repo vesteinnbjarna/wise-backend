@@ -11,6 +11,7 @@ datasource db {
   url       = "postgres://higomppbkjryxl:14bcd2032a21fec619d5cd4b135cb33b7ebd176555ca01c52e6e0c4f236e93be@ec2-52-208-221-89.eu-west-1.compute.amazonaws.com:5432/dcb9h90ositaud"
 }
 
+
 model Board {
   id          Int      @id @default(autoincrement())
   createdAt   DateTime @default(now())
