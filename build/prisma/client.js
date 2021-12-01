@@ -1,5 +1,6 @@
 "use strict";
-const { PrismaClient } = require('@prisma/client');
+Object.defineProperty(exports, "__esModule", { value: true });
+const client_1 = require("@prisma/client");
 module.exports = {
-    prisma: new PrismaClient(),
+    prisma: new client_1.PrismaClient(),
 };
