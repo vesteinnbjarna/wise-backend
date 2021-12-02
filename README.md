@@ -1,377 +1,547 @@
-# Wise-Backend #
+# BackEnd
+## Running the backend locally
+Note that to run the backend locally you need to set up your own postgres server locally and connect the Prisma client to it. 
+This is a bit of a hassell and isn't recommended.
 
+## Technologies
+- PostgreSQL
+- Prisma
+- GraphQL
+## Database
+The database is a postgres database made with Prisma and GraphQL and is hosted at [Heroku](https://wise-trace.herokuapp.com/api). 
 
-# This backend is hosted on heroku #
-https://wise-trace.herokuapp.com/api
-It uses TypeScript, GraphQL and Prism.
-We have yet to implement a way to run this within the frontend
-However for each Query or Mutation you just need to run them in Postman to see if they work.
+### Database Schema
+![DatabaseSchema](databaseSchema.png)
 
-## implemented as of 25/11 ##
-## Fish Queries and Mutations ##
+## API
+The GraphQL API supports GET and UPDATE queries for all the entities in our DB. 
+However it is important to understand that the front-end of the application isn't suppose to be able to create or update the entries in the database. However it would probably be smart to implement that for potential customers in the future, so that they can easiliy create new or update existing entries in the database. That wasn't in the scope of the project but could be implemented later down the down the line.
+The following tables are in our database:
 
-### fishes ###
-
-returns all fishes in the database
+##  Traceability:
 ```
-query
-{
-    fishes {
+id: int
+fishingtripiD: int
+```
+  
+
+## Traceability Queries and Mutations
+**Get specific traceability**
+```
+query{
+    traceability(id:int)
+    {
+        id
+        fishingtripId
+    }
+}
+```
+**Get all traceabilites**
+```
+query{
+    traceabilities
+    {
+        id
+        fishingtripId
+    }
+}
+```
+**Create Traceability** note that there is a foreign key constraint on fishingtripId. So to be able to create a new traceability there must already be one in the database. 
+```
+mutation{
+    createTraceability(id:int, fishingtripId:int)
+    {
+        id
+        fishingtripId
+    }
+}
+```
+**Update Traceability** has **not been implemented.** 
+
+
+## Fishingtrip
+```
+id: int
+startDate: string
+endDate:string
+fishId: int
+boatId: int
+harbourId: int
+locationId: int
+treatedbyid: int
+```
+## Fishingtrip Queries
+**Get specific fishingtrip**
+```
+query{
+    fishingtrips(id:int)
+    {
+        id
+        startDate
+        endDate
+        fishId
+        boatId
+        harbourId
+        locationId
+        treatedbyid
+    }
+}
+```
+**Get all fishingtrips**
+```
+query{
+    fishingtrips
+    {
+        id
+        startDate
+        endDate
+        fishId
+        boatId
+        harbourId
+        locationId
+        treatedbyid
+    }
+}
+```
+**Create Fishingtrip** for creating a fishingtrip there are a couple of things to note
+- This table relies on alot of relations and they will be listed below.
+- Each of these relations must already exist so that the user can create a fishingtrip
+
+**The Foreign key constraints for fishingtrips are:**
+1. fishId - This references a valid Fish in the Fish table
+2. boatId - This references a valid Boat in the Boat table
+3. harbourId - this references a valid Harbour in the Harbour table
+4. locationId - This references a valid Location in the Location table
+5. treatedbyId - This references a valid TreatedBy in the TreatedBy table
+
+```
+mutation{
+    createFishingtrip(
+        startDate: string
+        endDate: string
+        fishId: int
+        boatId: int
+        harbourId: int
+        locationId: int
+        treatedbyid: int
+    )
+    {
+        id
+        startDate
+        endDate
+        fishId
+        boatId
+        harbourId
+        locationId
+        treatedbyid
+    }
+}
+```
+**Update Fishingtrip has not yet been implement**
+
+
+
+
+##  Harbour 
+```
+id: int
+name: string
+latitude: float
+longitude: float
+```
+
+## Harbour Queries and mutations
+**Get specific harbour**
+```
+query{
+    harbour(id:int)
+    {
         id
         name
-        description
-        imguri
+        latitude
+        longitude
+    }
+}
+```
+**Get all harbours**
+```
+query{
+    harbours
+    {
+        id
+        name
+        latitude
+        longitude
     }
 }
 ```
 
-### fish ###
-returns a single fish or undefined
+**Create harbour**
+```
+mutation {
+    harbour(
+        name: string
+        latitude: float
+        longitude: float
+        )
+    {
+        id
+        name
+        latitude
+        longitude
+    }
+}
+```
+
+**Update harbour** note that for all the update mutations the use must reference an already existing entity in the database to update.
+```
+mutation {
+    updateHarbour(
+        id:int
+        name: string
+        latitude: float
+        longitude: float
+        )
+    {
+        id
+        name
+        latitude
+        longitude
+    }
+}
+```
+
+
+## Fish 
+```
+id: int
+name: string
+imguri: string
+description: string
+```
+
+## Fish Queries and Mutations
+
+**Get specific fish**
 ```
 query{
-  fish(id: 8) {
-    id
-    imguri
-    description
-    name
-  }
-}
-```
-
-
-
-### **createFish** ###
-creates a fish and then returns it. If the name is already present in the database it will not create it.
-```
-mutation {
-    createFish(imguri: "www.bigfish.com", description: "sad fish eats alot", name: "bigfish3") {
-    id
-    name
-    description
-    imguri
-    
-  }
-}
-```
-
-## Location Queries and Mutations ##
-### locations ###
-
-returns all fishes in the database
-```
-query {
-  locations {
-    id,
-    name
-  }
-}
-```
-
-### location ###
-returns a single fish or undefined
-```
-query  {
-  location(id:1) {
-    id,
-    name
-  }
-}
-```
-
-
-
-### **createLocation** ###
-creates a location and then returns it. If the name is already present in the database it will not create it.
-```
-mutation  {
-  createLocation(name: "Reykjavík") {
-    id
-    name
-  }
-}
-```
-
-### **createFish** ###
-creates a fish and then returns it. If the name is already present in the database it will not create it.
-```
-mutation {
-    createFish(imguri: "www.bigfish.com", description: "sad fish eats alot", name: "bigfish3") {
-    id
-    name
-    description
-    imguri
-    
-  }
-}
-```
-
-## Harbour Queries and Mutations ##
-### harbours ###
-
-returns all harbours in the database
-```
-query Harbours {
-  harbours {
-    id
-    name
-    latitude
-    longitude
-  }
-}
-```
-
-### harbour ###
-returns a single harbour or undefined
-```
-query Harbour {
-  harbour(id:1) {
-    id
-    name
-    longitude
-    latitude
-  }
-}
-```
-
-### **createHarbour** ###
-creates a harbour and then returns it. If the name is already present in the database it will not create it.
-```
-mutation {
-  createHarbour(name: "Hafnarfjörður", latitude: 55.1, longitude: 55.2) {
-    id
-    name
-    latitude
-    longitude
-    
-  }
-}
-```
-
-## FishingEquipment Queries and Mutations ##
-### FE ###
-
-returns all fe in the database
-```
-query {
-  fishingequipments {
-    id
-    name
-  }
-```
-
-### FishingEquipment ###
-returns a single fe or undefined
-```
-query {
-  fishingequipment(id:1) {
-    id
-    name
-  }
-}
-```
-
-### **createFishingEquipment** ###
-creates a fe and then returns it. If the name is already present in the database it will not create it.
-```
-mutation {
-  createFishingEquipment(name: "bby") {
-    id
-    name
-  }
-}
-```
-
-
-## Boats Queries and Mutations ##
-### boats ###
-
-returns all boats in the database
-```
-query Boats {
-  boats {
-    id
-    name
-    imguri
-    freeze_trawler
-    fishingequipmentId
-  }
-}
-```
-
-### boat ###
-returns a single boat or undefined
-```
-query Query {
-  boat(id:1) {
-    id
-    name
-    imguri
-    fishingequipmentId
-    freeze_trawler  
-  }
-}
-```
-
-### **createBoat** ###
-creates a boat and then returns it. If the name is already present in the database it will not create it. Also it has a foreign key contraint on fishingequipmentId, it needs to be present in the data base for it to be created.
-```
-mutation CreateBoat {
-  createBoat(name: "Gullfoss-3", imguri: "www.boat.com", fishingequipmentId: 1, freeze_trawler: true) {
-    name
-    id
-    imguri
-    fishingequipmentId
-    freeze_trawler 
-  }
-}
-```
-
-## TreatedBy Queries and Mutations ##
-### treatedbys ###
-
-returns all treatedby in the database
-```
-query Treatedbys {
-  treatedbys {
-    id
-    name
-    description
-    logouri
-    homepage
-    imguri
-  }
-}
-```
-
-### treatedby ###
-returns a single treatedby or undefined
-```
-query Query {
-  treatedby(id:1) {
-    name
-    description
-    id
-    logouri
-    homepage
-    imguri
-  }
-}
-```
-
-### **createTreatedBy** ###
-creates a treatedby and then returns it. If the name is already present in the database it will not create it. 
-```
-mutation CreateTreatedBy{
-  createTreatedBy(name: "Brim3", description: "Brim is a cool company", logouri: "www.brim.com/logo", homepage: "brim.is", imguri: "brim.is/img") {
-    name
-    description
-    id
-    logouri
-    homepage
-    imguri
-  }
-}
-```
-
-## FishingTrip Queries and Mutations ##
-### fishingtrips ###
-
-returns all fishingtrips in the database
-```
-query {
-  fishingtrips {
-    id
-    startDate
-    endDate
-    boatId
-    fishId
-    locationId
-    harbourId
-    treatedbyid
-  }
-}
-```
-
-### fishingtrip ###
-returns a single fishingtrip or undefined
-```
-query {
-  fishingtrip (id:1){
-    id
-    startDate
-    endDate
-    boatId
-    fishId
-    locationId
-    harbourId
-    treatedbyid
-    
-  }
-}
-```
-
-### **createFishingTrip** ###
-creates a fishingtrip and then returns it. This is a big one. Before creating a fishing trip you need to make sure that the following already exist in the database
--fish
--boat
--harbour
--location
--treatedby
-**You will then have to ** create the fishingtrip with id's of those entities stated above. And also with a start date and a enddate
-There is an example below that works if atleast one of each already exists in the data base
-```
-mutation {
-  createFishingTrip(
-    startDate: "2020-1-2", 
-    endDate: "2021-3-2", 
-    fishId: 1, 
-    boatId: 1, 
-    harbourId: 1, 
-    locationId: 1, 
-    treatedbyid: 1) 
+    fish(id:int)
     {
-    startDate
-    endDate
-    fishId
-    boatId
-    harbourId
-    locationId
-    treatedbyid
-    id
-  }
+        id
+        name
+        imguri
+        description
+    }
+}
+```
+**Get all fishes**
+```
+query{
+    fishes
+    {
+        id
+        name
+        imguri
+        description
+    }
 }
 ```
 
-## Traceability Queries and Mutations ##
-### traceabilities ###
-
-returns all traceabilites in the database
+**Create Fish**
 ```
-query {
-  traceabilities {
-    fishingtripId
-    id
-  }
+mutation{
+    createFish(
+            name:string
+            imguri:string
+            description:string
+        )
+    {
+        id
+        name
+        imguri
+        description
+    }
 }
 ```
 
-### traceability ###
-returns a single traceability or undefined
+**Update Fish**
 ```
-query {traceability(id:1) {
-  fishingtripId
-  id
-}}
+mutation{
+    updateFish(
+            int:id
+            name:string
+            imguri:string
+            description:string
+        )
+    {
+        id
+        name
+        imguri
+        description
+    }
+}
+```
+## Location
+```
+id: int
+name: string
+
 ```
 
-### **createTraceability** ###
-
+## Location Queries and Mutations
+**Get specific location**
 ```
-mutation {
-  createTraceability(id: 1) {
-    fishingtripId
-    id
-    
-  }
+query{
+    location(id:int)
+    {
+        id
+        name
+    }
+}
+```
+**Get all locations**
+```
+query{
+    locations
+    {
+        id
+        name
+    }
+}
+```
+**Create Location**
+```
+mutation{
+    createLocation(name:string)
+    {
+        id
+        name
+    }
+}
+```
+
+**Update Location**
+```
+mutation{
+    updateLocation
+    (
+        id: int
+        name:string
+    )
+    {
+        id
+        name
+    }
+}
+```
+
+
+## Boat
+```
+id: int
+name: string
+imguri: string
+freeze_trawler: boolean
+fishingequipmentId: int
+```
+
+## Boat Queries and Mutations
+**Get specific boat**
+```
+query{
+    boat(id:int)
+    {
+        id
+        name
+        imguri
+        freeze_trawler
+        fishingequipmentId
+    }
+}
+```
+**Get all boats**
+```
+query{
+    boats
+    {
+        id
+        name
+        imguri
+        freeze_trawler
+        fishingequipmentId
+    }
+}
+```
+
+**Create Boat** - There is one foreign key constraint to be aware of when creating a boat and that is FishingEquipment. In order to create a boat an existing you must use the fishingequipmentId to reference an existing  FishingEquipment. 
+```
+mutation{
+    createBoat
+    (
+        name:string
+        imguri: string
+        freeze_trawler: boolean
+        fishingeuipmentId: int
+    )
+    {
+        id
+        name
+        imguri
+        freeze_trawler
+        fishingequipmentId
+    }
+}
+```
+
+**Update Boat** - Same foreign key constraint here as above. It is also mandatory that the id references an existing Boat.
+```
+mutation{
+    updateBoat
+    (
+        id: int
+        name:string
+        imguri: string
+        freeze_trawler: boolean
+        fishingeuipmentId: int
+    )
+    {
+        id
+        name
+        imguri
+        freeze_trawler
+        fishingequipmentId
+    }
+}
+```
+
+
+## TreatedBy
+```
+id: int
+name: string
+imguri: string
+logouri: string
+homepage: string
+```
+
+## Treatedby Queries and Mutations
+**Get specific treatedby**
+```
+query{
+    treatedby(id:int)
+    {
+        id
+        name
+        imguri
+        logouri
+        homepage
+    }
+}
+```
+**Get all treatedby**
+```
+query{
+    treatedbys
+    {
+        id
+        name
+        imguri
+        logouri
+        homepage
+    }
+}
+```
+
+**Create treatedby**
+```
+mutation{
+    createTreatedBy
+    (
+        name: string
+        imguri: string
+        logouri: string
+        homepage: string
+    )
+    {
+        id
+        name
+        imguri
+        logouri
+        homepage
+    }
+}
+```
+
+**Update treatedby**
+```
+mutation{
+    updateTreatedBy
+    (
+        id: int
+        name: string
+        imguri: string
+        logouri: string
+        homepage: string
+    )
+    {
+        id
+        name
+        imguri
+        logouri
+        homepage
+    }
+}
+```
+
+## FishingEquipment
+```
+id: int
+name: string
+```
+
+## FishningEquipment Queries and Mutations
+**Get a specific fishingequipment**
+```
+query{
+    fishingequipment(id:int)
+    {
+        id
+        name
+    }
+}
+```
+**Get all fishingequipments**
+```
+query{
+    fishingequipment(id:int)
+    {
+        id
+        name
+    }
+}
+```
+**Create fishingequipment**
+```
+mutation{
+    fishingequipment(name:string)
+    {
+        id
+        name
+    }
+}
+```
+
+**Update fishingequipment**
+```
+mutation{
+    fishingequipment
+    (
+        id:int 
+        name:string
+    )
+    {
+        id
+        name
+    }
 }
 ```
