@@ -2,17 +2,12 @@ import { createServer } from "http";
 import express from "express";
 import { ApolloServer, gql } from "apollo-server-express";
 const { prisma } = require('./prisma/client')
-//import { GraphQLDateTime } from "graphql-iso-date";
 
-// Alltaf að muna að breyta url-inu fyrir DB fyrir deployment
 const startServer = async () => { 
-
-  // 2
-  
+  // Create an express server
   const app = express()
   const httpServer = createServer(app)
-
-  // 3
+  // GraphQL
   const typeDefs = gql`
     type Board {
     id: ID!
@@ -110,15 +105,22 @@ const startServer = async () => {
     createTraceability(fishingtripId: Int!):Traceability
     createFishingTrip(startDate: String! endDate: String! fishId:Int! boatId:Int! harbourId:Int! locationId:Int! treatedbyid: Int!):Fishingtrip
     createTreatedBy(name:String! description:String! logouri:String! homepage:String! imguri:String!):Treatedby
+    updateTreatedBy(id: Int! name:String! description:String! logouri:String! homepage:String! imguri:String!):Treatedby
     createFish(imguri: String! description: String! name: String!): Fish
-    createLocation(name: String!): Location
+    updateFish(id: Int! name:String! description:String! imguri:String!):Fish
+    deleteFish(id:Int!):Boolean
+    createLocation(name: String!): Location!
+    updateLocation(id:Int!  name: String!): Location!
     createHarbour(name: String! latitude: Float! longitude: Float!):Harbour
+    updateHarbour(id: Int! name: String! latitude: Float! longitude: Float!):Harbour
     createFishingEquipment(name:String!):Fishingequipment
+    updateFishingEquipment(id:Int! name:String!):Fishingequipment
     createBoat(name:String! imguri: String! fishingequipmentId: Int! freeze_trawler: Boolean!):Boat
+    updateBoat(id: Int! name:String! imguri: String! freeze_trawler: Boolean!):Boat
   }
 
 `;
-
+// The Resolvers below
 const resolvers = {
   Query: {
     traceability(parent:any, args:any, context:any, info:any){
@@ -217,6 +219,100 @@ const resolvers = {
   },
 
   Mutation: {
+    deleteFish: async (parent:any, args:any, context:any, info:any) => {
+      const deletedFish = await prisma.fish.delete(
+        { where: {
+          id: args.id
+        }}
+      )
+      return true;
+    },
+    updateLocation: async(parent:any, args:any, context:any, info:any) => {
+      const updateLocation = await prisma.location.update({
+        where:{
+          id: args.id
+        },
+        data:{
+          name: args.name
+        }
+      })
+      return updateLocation;
+    },
+    updateHarbour: async(parent:any, args:any, context:any, info:any)=>{
+      const updateHarbour = await prisma.harbour.update({
+        where:{
+          id: args.id
+        },
+        data: {
+          name: args.name,
+          latitude: args.latitude,
+          longitude: args.longitude
+        }
+      })
+      return updateHarbour;
+    },
+
+    updateFishingEquipment: async (parent:any, args:any, context: any, info:any) => {
+      const updateFe = await prisma.fishingequipment.update({
+        where:{
+          id: args.id
+        },
+        data:{
+          name: args.name
+        }
+      })
+      return updateFe;
+    },
+
+    updateBoat: async (parent:any, args:any, context:any, info:any) => {
+      const updatedBoat = await prisma.boat.update(
+      { 
+        where:
+        {
+          id: args.id
+        },
+        data: {
+          name: args.name,
+          imguri: args.imguri,
+          freeze_trawler: args.freeze_trawler
+        } 
+    })
+    return updatedBoat;
+    },
+
+    updateTreatedBy: async (parent:any, args:any, context: any, info:any) => {
+      const updateTreatedBy = await prisma.treatedby.update({
+        where:{
+          id: args.id
+        },
+        data: {
+          name: args.name,
+          description: args.description,
+          homepage: args.homepage,
+          logouri: args.logouri,
+          imguri: args.imguri
+        }
+      })
+      return updateTreatedBy;
+    },
+  
+
+    updateFish: async (parent:any, args:any, context:any, info:any) => {
+      const updatedFish = await prisma.fish.update(
+        
+        { where:{
+          id: args.id
+        },
+        data: {
+          name: args.name,
+          description: args.description,
+          imguri: args.imguri,
+        }
+
+        
+      })
+      return updatedFish;
+    },
     createTraceability: async(parent:any, args:any, context:any, info:any) => { 
       const newTraceability = await prisma.traceability.create({
         data: {
@@ -315,22 +411,18 @@ const resolvers = {
   }
 };
 
-  // 5
   const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
   })
 
-  // 6
   await apolloServer.start()
 
-  // 7
   apolloServer.applyMiddleware({
       app,
       path: '/api'
   })
 
-  // 8
   httpServer.listen({ port: process.env.PORT || 4000 }, () =>
     console.log(`Server listening on localhost:4000${apolloServer.graphqlPath}`)
   )
